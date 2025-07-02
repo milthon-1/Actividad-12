@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Juego del Intercambio</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .inventario {
+            background-color: #f0f0f0;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+        .opcion {
+            background-color: #e9f7ef;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 15px;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 8px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        .historial {
+            margin-top: 30px;
+            border-top: 1px solid #ddd;
+            padding-top: 15px;
+        }
+    </style>
+</head>
+<body>
+    <h1>🎮 Juego del Intercambio</h1>
+    
+    <div class="inventario">
+        <h2>📦 Inventario Actual</h2>
+        <p><strong>Elementos:</strong> {{ inventario|join(', ') }}</p>
+        <p><strong>Regalos:</strong> {{ inventario.count('regalo') }}</p>
+        <p><strong>Grupos disponibles:</strong> {{ grupos_posibles }}</p>
+    </div>
+    
+    <h2>⚙️ Opciones</h2>
+    
+    <div class="opcion">
+        <h3>1. Canjear 2 grupos por un regalo + 2 elementos</h3>
+        {% if grupos_posibles >= 2 %}
+        <form method="POST">
+            <input type="hidden" name="accion" value="canjear_grupos">
+            <p>Elige 2 elementos adicionales:</p>
+            <select name="extra1">
+                {% for elemento in elementos %}
+                <option value="{{ elemento }}">{{ elemento }}</option>
+                {% endfor %}
+            </select>
+            <select name="extra2">
+                {% for elemento in elementos %}
+                <option value="{{ elemento }}">{{ elemento }}</option>
+                {% endfor %}
+            </select>
+            <button type="submit">Confirmar canje</button>
+        </form>
+        {% else %}
+        <p style="color: red;">Necesitas al menos 2 grupos completos para canjear</p>
+        {% endif %}
+    </div>
+    
+    <div class="opcion">
+        <h3>2. Canjear 1 regalo por 6 elementos</h3>
+        {% if 'regalo' in inventario %}
+        <form method="POST">
+            <input type="hidden" name="accion" value="canjear_regalo">
+            <p>Elige 6 nuevos elementos:</p>
+            {% for i in range(6) %}
+            <select name="nuevo_{{ i }}">
+                {% for elemento in elementos %}
+                <option value="{{ elemento }}">{{ elemento }}</option>
+                {% endfor %}
+            </select>
+            {% endfor %}
+            <button type="submit">Confirmar canje</button>
+        </form>
+        {% else %}
+        <p style="color: red;">No tienes regalos para canjear</p>
+        {% endif %}
+    </div>
+    
+    <div class="opcion">
+        <h3>3. Reiniciar juego</h3>
+        <form method="POST">
+            <input type="hidden" name="accion" value="reiniciar">
+            <button type="submit">Reiniciar juego</button>
+        </form>
+    </div>
+    
+    <div class="historial">
+        <h3>📜 Historial de acciones</h3>
+        <ul>
+            {% for accion in historial %}
+            <li>{{ accion }}</li>
+            {% endfor %}
+        </ul>
+    </div>
+</body>
+</html>
